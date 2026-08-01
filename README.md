@@ -27,5 +27,16 @@ Translating the fuzzy labels into vehicle-control logic (SD = speed difference f
 <img width="1098" height="442" alt="image" src="https://github.com/user-attachments/assets/7a5c116b-5551-488a-8c6e-5f507419c0ee" />
 
 ### Pipeline
-<img width="1070" height="1008" alt="image" src="https://github.com/user-attachments/assets/9c5456d9-1532-456e-93f6-5025a604cb8c" />
+<img width="600" height="620" alt="image" src="https://github.com/user-attachments/assets/9c5456d9-1532-456e-93f6-5025a604cb8c" />
+
+That's the full pipeline your code implements. A quick recap of the key equation at each stage:
+
+- Fuzzification — apply the shoulder/triangular formulas to SD and A.
+- Rule evaluation — min for AND within a rule, max (via compare()) across rules sharing a consequent.
+- Aggregation — each active output set gets clipped at its firing strength 𝜇
+  and its exact area is computed geometrically (trapezoid formulas above) rather than by numerical integration.
+- Defuzzification — weighted average of (area × representative x) over all active output sets:
+
+  <img width="552" height="104" alt="image" src="https://github.com/user-attachments/assets/2331029f-61d5-4474-9b70-f75111ae29a9" />
+
 
