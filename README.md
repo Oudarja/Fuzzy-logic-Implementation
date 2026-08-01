@@ -1,5 +1,5 @@
 # Fuzzy-logic-Implementation
-This repo is associated with speed control of vehicle through fuzzy logic. It's a merely tutorial based repo in which fuzzy logic has been implemented.
+This repo is associated with speed control of vehicle through fuzzy logic. It's a merely tutorial based repo in which fuzzy logic has been implemented.The code implements a classic Mamdani-type FLC pipeline, but with a closed-form (geometric) shortcut for defuzzification instead of numerical integration.
 
 ### Linguistic variable levels (used for SD = speed difference , A = Accelerator, and TC= Throttle Control):
 
