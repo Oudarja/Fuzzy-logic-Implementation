@@ -44,13 +44,6 @@ R8: if SD is ZE and A is NM then TC is PM
 
 """
 import numpy as np
-Speed=120
-Acceleration=125
-
-print("The speed input is:", Speed)
-print("The acceleration input is:", Acceleration)
-
-print("\n")
 
 
 # Functions for open left and open right membership functions
@@ -96,22 +89,7 @@ def partition(x):
     return NL,NM,NS,ZE,PS,PM,PL
 
 
-# Getting the fuzzy values for speed and acceleration
 
-NLSD,NMSD,NSSD,ZESD,PSSD,PMSD,PLSD = partition(Speed)
-NLAC,NMAC,NSAC,ZEAC,PSAC,PMAC,PLAC = partition(Acceleration)
-
-
-# Displaying the fuzzy values for speed and acceleration
-output=[[NLSD,NMSD,NSSD,ZESD,PSSD,PMSD,PLSD],
-        [NLAC,NMAC,NSAC,ZEAC,PSAC,PMAC,PLAC]]
-
-print("The fuzzy values of the crisp inputs are:")
-
-print(["NL","NM","NS","ZE","PS","PM","PLSD"])
-# Here the first row is for speed and second row is for acceleration
-# np.round is used to round the values to 2 decimal places
-print(np.round(output,2))
 
 # Rules implementation
 
@@ -203,18 +181,126 @@ def rule(NLSD,NMSD,NSSD,ZESD,PSSD,PMSD,PLSD,NLAC,NMAC,NSAC,ZEAC,PSAC,PMAC,PLAC):
 
 # Defuzzification
 
+# areaTR function is used to calculate the area of the trapezoid 
+# formed by the fuzzy value and the membership function
+def areaTR(mu,a,b,c):
+    # The key idea — a straight line climbs proportionally
+    # to the degree of membership (mu) from 0 to 1, and then
+    # descends proportionally back to 0.
+    x1=mu*(b-a)+a
+    x2=c-mu*(c-b)
+    d1=c-a
+    d2=x2-x1
+    area=((d1+d2)*mu)/2
+    return area
+
+def areaOL(mu, alpha, beta):
+    # The key idea — a straight line climbs proportionally
+    # to the degree of membership (mu) from 0 to 1, and then
+    xOL = beta -mu*(beta - alpha)
+    # returning the area of the open left membership function and
+    # centroid of the open left membership function
+    return 1/2*mu*(beta+ xOL), beta/2
 
 
+def areaOR(mu, alpha, beta):
+    # The key idea — a straight line climbs proportionally
+    xOR = (beta - alpha)*mu + alpha
+    aOR = (1/2)*mu*((240 - alpha) + (240 -xOR))
+    return aOR, (240 - alpha)/2 + alpha
 
 
+def defuzzyfication(PLTC, PMTC, PSTC, NSTC, NLTC):
+    # Calculating the crisp value of throttle control based on the
+    #  fuzzy  Here PL means positive large, PM means positive medium,
+    #  PS means positive small, NS means negative small and NL means
+    #  negative large
+
+    areaPL = 0; areaPM = 0; areaPS = 0; areaNS = 0; areaNL = 0;
+    cPL = 0; cPM = 0; cPS = 0; cNS = 0; cNL = 0;
+
+    if PLTC != 0:
+        #areaPL, cPL = areaOR(PLTC, 180, 210)
+        areaPL, cPL = areaOR(PLTC, 180, 210)
+                
+    if PMTC != 0:
+        areaPM = areaTR(PMTC, 150, 180, 210)
+        cPM = 180
+    
+    if PSTC != 0:
+        areaPS = areaTR(PSTC, 120, 150, 180)
+        cPS = 150
+          
+    if NSTC != 0:
+        areaNS = areaTR(NSTC, 60, 90, 120)
+        cNS = 90
+        
+    if NLTC !=0:
+        areaNL, cNL = areaOL(NLTC, 30, 60)
+
+    # Calculating the crisp value of throttle control based on the fuzzy values 
+    # The equation that we are using here is the weighted average of the fuzzy 
+    # values and their corresponding centroids. The numerator is the sum of the
+    # products of the fuzzy values and their corresponding centroids, and the denominator
+    # is the sum of the fuzzy values. The crisp value is then calculated by dividing the
+    # numerator by the denominator.
+
+    numerator = areaPL*cPL + areaPM*cPM + areaPS*cPS + areaNS*cNS + areaNL*cNL
+    denominator = areaPL + areaPM + areaPS + areaNS + areaNL
+    if denominator ==0:
+        print("No rules exist to give the result")
+        return 0
+    else:
+        crispOutput = numerator/denominator
+        return crispOutput
 
 
+# Here we are taking the crisp values of speed and acceleration as input from the user
+Speed=100
+Acceleration=125
+
+print("The speed input is:", Speed)
+print("The acceleration input is:", Acceleration)
+
+print("\n")
+
+# Getting the fuzzy values for speed and acceleration
+
+NLSD,NMSD,NSSD,ZESD,PSSD,PMSD,PLSD = partition(Speed)
+NLAC,NMAC,NSAC,ZEAC,PSAC,PMAC,PLAC = partition(Acceleration)
 
 
+# Displaying the fuzzy values for speed and acceleration
+output=[[NLSD,NMSD,NSSD,ZESD,PSSD,PMSD,PLSD],
+        [NLAC,NMAC,NSAC,ZEAC,PSAC,PMAC,PLAC]]
 
+print("The fuzzy values of the crisp inputs are:")
 
+print(["NL","NM","NS","ZE","PS","PM","PLSD"])
+# Here the first row is for speed and second row is for acceleration
+# np.round is used to round the values to 2 decimal places
+print(np.round(output,2))
 
+"""
+Calculating the fuzzy values for throttle control based on the rules
+implemented above. Actually the process of calculating the fuzzy values
+for throttle control based on the rules is called inference. Inference is
+the process of deriving new fuzzy values from existing fuzzy values based on 
+a set of rules. In this case, we are using the rules defined above to derive new 
+fuzzy values for throttle control based on the fuzzy values of speed and acceleration.
+"""
 
+PLTC, PMTC, PSTC, NSTC, NLTC = rule(NLSD,NMSD,NSSD,ZESD,PSSD,PMSD,PLSD,NLAC,NMAC,NSAC,ZEAC,PSAC,PMAC,PLAC)
 
+print("\n")
+# Display the fuzzy values for all rules
+outPutRules = [[PLTC, PMTC, PSTC, NSTC, NLTC ]]
+print("The fuzzy output: ")
+print(["PLTC", "PMTC", "PSTC", "NSTC", "NLTC"])
+print(np.round(outPutRules,2))
 
+# Calculating the crisp value of throttle control based on the fuzzy values
+crispOutputFinal = defuzzyfication(PLTC, PMTC, PSTC, NSTC, NLTC)
 
+if crispOutputFinal !=0:
+    print("\nThe crisp TC value is: ", crispOutputFinal)
