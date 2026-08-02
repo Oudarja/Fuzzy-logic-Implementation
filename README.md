@@ -29,14 +29,26 @@ Translating the fuzzy labels into vehicle-control logic (SD = speed difference f
 ### Pipeline
 <img width="600" height="620" alt="image" src="https://github.com/user-attachments/assets/9c5456d9-1532-456e-93f6-5025a604cb8c" />
 
-That's the full pipeline your code implements. A quick recap of the key equation at each stage:
+That's the full pipeline code implements. A quick recap of the key equation at each stage:
 
 - Fuzzification — apply the shoulder/triangular formulas to SD and A.
 - Rule evaluation — min for AND within a rule, max (via compare()) across rules sharing a consequent.
 - Aggregation — each active output set gets clipped at its firing strength 𝜇
   and its exact area is computed geometrically (trapezoid formulas above) rather than by numerical integration.
-- Defuzzification — weighted average of (area × representative x) over all active output sets:
+- Defuzzification — weighted average of over all active output sets:
 
-  <img width="552" height="104" alt="image" src="https://github.com/user-attachments/assets/2331029f-61d5-4474-9b70-f75111ae29a9" />
+### Finidng x1 and x2 for triangular area :
+<img width="600" height="300" alt="image" src="https://github.com/user-attachments/assets/d5a5b461-d4a7-4032-b338-ca0487fb3284" />
+
+### Finding Open left area :
+<img width="650" height="500" alt="image" src="https://github.com/user-attachments/assets/5d69cd53-4974-4fd8-9ca0-0421b30b3f5c" />
+
+### Finding Open right area: 
+<img width="650" height="500" alt="image" src="https://github.com/user-attachments/assets/e5567f3e-340a-44ff-94a4-c0d9bbd20765" />
+
+
+
+### Equation to find crisp value from fuzzy value (Defuzzification equation)
+<img width="500" height="90" alt="image" src="https://github.com/user-attachments/assets/2331029f-61d5-4474-9b70-f75111ae29a9" />
 
 
